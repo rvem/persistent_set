@@ -5,15 +5,12 @@
 persistent_set::persistent_set() : root(std::make_shared<node>(std::numeric_limits<value_type>::max())) {}
 
 
-persistent_set::persistent_set(persistent_set const &other) : root(std::make_shared<node>(other.root)){}
+persistent_set::persistent_set(persistent_set const &other) : root(std::make_shared<node>(other.root)) {}
+//persistent_set::persistent_set(persistent_set const &other) : root(other.root) {}
 
 persistent_set &persistent_set::operator=(persistent_set const &rhs) {
     root = std::make_shared<node>(rhs.root);
     return *this;
-}
-
-persistent_set::~persistent_set() {
-    root.reset();
 }
 
 persistent_set::iterator::iterator(std::shared_ptr<node> curr, std::shared_ptr<node> root) : curr(curr), root(root) {}
