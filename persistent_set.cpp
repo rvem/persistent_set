@@ -1,14 +1,12 @@
 #include "persistent_set.h"
 #include <limits>
+#include <assert.h>
 
-persistent_set::persistent_set() {
-    root = std::shared_ptr<node>(new node(std::numeric_limits<value_type>::max()));
-}
+persistent_set::persistent_set() : root(std::make_shared<node>(std::numeric_limits<value_type>::max())) {}
 
 
-persistent_set::persistent_set(persistent_set const &other) {
-    root = std::shared_ptr<node>(new node(other.root));
-}
+persistent_set::persistent_set(persistent_set const &other) : root(std::make_shared<node>(other.root)){}
+
 persistent_set &persistent_set::operator=(persistent_set const &rhs) {
     root = std::make_shared<node>(rhs.root);
     return *this;
@@ -18,9 +16,9 @@ persistent_set::~persistent_set() {
     root.reset();
 }
 
-persistent_set::iterator::iterator(std::shared_ptr<node> curr, std::shared_ptr<node> root): curr(curr), root(root) {}
+persistent_set::iterator::iterator(std::shared_ptr<node> curr, std::shared_ptr<node> root) : curr(curr), root(root) {}
 
-persistent_set::iterator::iterator(iterator const &rhs): curr(rhs.curr), root(rhs.root) {}
+persistent_set::iterator::iterator(iterator const &rhs) : curr(rhs.curr), root(rhs.root) {}
 
 persistent_set::iterator persistent_set::find(value_type key) {
     std::shared_ptr<node> res = root->find(key);
@@ -39,10 +37,11 @@ std::pair<persistent_set::iterator, bool> persistent_set::insert(value_type key)
 }
 
 void persistent_set::erase(iterator iter) {
+    assert(iter != end());
     root->erase(iter.curr, nullptr);
 }
 
-persistent_set::iterator& persistent_set::iterator::operator=(persistent_set::iterator const &rhs) {
+persistent_set::iterator &persistent_set::iterator::operator=(persistent_set::iterator const &rhs) {
     curr = rhs.curr;
     root = rhs.root;
     return *this;
@@ -68,7 +67,7 @@ persistent_set::iterator persistent_set::end() const {
     return iterator(curr, root);
 }
 
-persistent_set::iterator& persistent_set::iterator::operator++() {
+persistent_set::iterator &persistent_set::iterator::operator++() {
     if (curr->right) {
         curr = curr->right;
         while (curr->left) {
@@ -80,7 +79,7 @@ persistent_set::iterator& persistent_set::iterator::operator++() {
     return *this;
 }
 
-persistent_set::iterator& persistent_set::iterator::operator--() {
+persistent_set::iterator &persistent_set::iterator::operator--() {
     if (curr->left) {
         curr = curr->left;
         while (curr->right) {
@@ -92,15 +91,13 @@ persistent_set::iterator& persistent_set::iterator::operator--() {
     return *this;
 }
 
-persistent_set::iterator persistent_set::iterator::operator++(int)
-{
+persistent_set::iterator persistent_set::iterator::operator++(int) {
     iterator tmp = *this;
     ++*this;
     return tmp;
 }
 
-persistent_set::iterator persistent_set::iterator::operator--(int)
-{
+persistent_set::iterator persistent_set::iterator::operator--(int) {
     iterator tmp = *this;
     --*this;
     return tmp;
@@ -115,9 +112,10 @@ bool operator==(persistent_set::iterator a, persistent_set::iterator b) {
     return a.curr == b.curr;
 }
 
-persistent_set::node::node(value_type key): key(key), left(nullptr), right(nullptr) {}
+persistent_set::node::node(value_type key) : key(key), left(nullptr), right(nullptr) {}
 
-persistent_set::node::node(std::shared_ptr<node> const &other): key(other->key), left(other->left), right(other->right){}
+persistent_set::node::node(std::shared_ptr<node> const &other) : key(other->key), left(other->left),
+                                                                 right(other->right) {}
 
 persistent_set::node &persistent_set::node::operator=(const node &other) {
     key = other.key;
