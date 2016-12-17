@@ -4,7 +4,7 @@
 
 persistent_set::persistent_set() : root(std::make_shared<node>(std::numeric_limits<value_type>::max())) {}
 
-persistent_set::persistent_set(persistent_set const &other) : root(std::make_shared<node>(other.root)) {}
+persistent_set::persistent_set(persistent_set const &other) : root(other.root) {}
 
 persistent_set &persistent_set::operator=(persistent_set const &rhs) {
     root = std::make_shared<node>(rhs.root);
@@ -26,6 +26,7 @@ persistent_set::iterator persistent_set::find(value_type key) {
 std::pair<persistent_set::iterator, bool> persistent_set::insert(value_type key) {
     persistent_set::iterator iter = find(key);
     if (iter == end()) {
+        root = std::make_shared<persistent_set::node>(root);
         return std::make_pair(iterator(root->insert(key), root), true);
     } else
         return std::make_pair(iter, false);
@@ -33,6 +34,7 @@ std::pair<persistent_set::iterator, bool> persistent_set::insert(value_type key)
 
 void persistent_set::erase(iterator iter) {
     assert(iter != end());
+    root = std::make_shared<persistent_set::node>(root);
     root->erase(iter.curr, nullptr);
 }
 
@@ -55,11 +57,7 @@ persistent_set::iterator persistent_set::begin() const {
 }
 
 persistent_set::iterator persistent_set::end() const {
-    std::shared_ptr<node> curr = root;
-    while (curr->right) {
-        curr = curr->right;
-    }
-    return iterator(curr, root);
+    return iterator(root, root);
 }
 
 persistent_set::iterator &persistent_set::iterator::operator++() {
