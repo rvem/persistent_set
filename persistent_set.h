@@ -61,7 +61,7 @@ public:
     };
 
     persistent_set();
-    
+
     persistent_set(persistent_set const&);
 
     persistent_set& operator=(persistent_set const& rhs);

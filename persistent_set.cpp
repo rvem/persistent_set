@@ -5,7 +5,6 @@
 persistent_set::persistent_set() : root(std::make_shared<node>(std::numeric_limits<value_type>::max())) {}
 
 persistent_set::persistent_set(persistent_set const &other) : root(std::make_shared<node>(other.root)) {}
-//persistent_set::persistent_set(persistent_set const &other) : root(other.root) {}
 
 persistent_set &persistent_set::operator=(persistent_set const &rhs) {
     root = std::make_shared<node>(rhs.root);
